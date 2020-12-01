@@ -1,0 +1,3 @@
+[submodule "aoc_2017"]
+	path = aoc_2017
+	url = git@github.com:HighMileage/aoc_2017.git
