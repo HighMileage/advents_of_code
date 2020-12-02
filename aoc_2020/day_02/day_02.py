@@ -16,12 +16,13 @@ def main(file_path):
         high = int(range_text.split("-")[1])
 
         count = 0
-        for letter in password:
-            if letter == limit_letter:
-                count=count+1
-                print(f"Got this count {count}")
+        if password[low-1] == limit_letter:
+            count=count+1
 
-        if count >= low and count <= high:
+        if password[high-1] == limit_letter:
+            count=count+1
+
+        if count == 1:
             good.append(password)
 
         print(limit_letter, high, low, "-----", x)
