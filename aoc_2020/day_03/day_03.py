@@ -8,26 +8,32 @@ def inputs(file_path):
             yield value[0]
 
 
-def main(file_path):
+def main(file_path, run, rise):
 
     x = 0
-    trees = []
-    rows = len(list(inputs(file_path)))
-    expanded_size = rows * 3
-    print(expanded_size)
+    trees_hit = 0
+
     for i, line in enumerate(inputs(file_path)):
-        limit = len(line)
-        multiplier = int(expanded_size * limit)
-        l = line * multiplier
+        if i % rise != 0:
+            continue
 
-        if l[x] == "#":
-            trees.append(1)
-        x += 3
+        if line[x % len(line)] == "#":
+            trees += 1
+        x += run
 
-    print(f"Looks like you'd hit {sum(trees)} trees")
+    print(
+        f"With a run of {run} and rise of {rise}, looks like you'd hit {sum(trees)} trees"
+    )
+    return sum(trees)
 
 
 if __name__ == "__main__":
     input_file = sys.argv[1]
     print("Day 2: XXX --------------------- \n")
-    main(input_file)
+
+    slopes = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
+    total = 1
+    for slope in slopes:
+        run, rise = slope
+        total = total * main(input_file, run, rise)
+    print(f"\nTotal tree count is lookin' like: {total}")
