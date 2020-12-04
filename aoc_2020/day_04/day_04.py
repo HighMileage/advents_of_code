@@ -1,0 +1,19 @@
+import csv
+import sys
+
+
+def inputs(file_path):
+    with open(file_path, "r") as input_file:
+        for value in csv.reader(input_file):
+            yield value[0]
+
+
+def main(file_path):
+    valid_passwords_part_1 = []
+    valid_passwords_part_2 = []
+
+
+if __name__ == "__main__":
+    input_file = sys.argv[1]
+    print("Day 4: XXX --------------------- \n")
+    main(input_file)
