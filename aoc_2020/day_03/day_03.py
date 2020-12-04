@@ -29,7 +29,7 @@ def main(file_path, run, rise):
 
 if __name__ == "__main__":
     input_file = sys.argv[1]
-    print("Day 2: XXX --------------------- \n")
+    print("Day 2: Toboggan Trajectory --------------------- \n")
 
     slopes = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
     total = 1
