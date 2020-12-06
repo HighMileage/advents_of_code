@@ -9,8 +9,24 @@ def inputs(file_path):
 
 
 def main(file_path):
-    for line in inputs(file_path):
-        print(line)
+    data = list(inputs(file_path))
+    batch = ""
+    responses = []
+    for i, line in enumerate(data):
+        batch = batch + line
+        if i + 1 < len(data) and data[i + 1] == "":
+            responses.append(batch)
+            batch = ""
+        if i + 1 == len(data):
+            responses.append(batch)
+
+    count = 0
+    for response in responses:
+        uniques = set()
+        uniques.update(response)
+        count += len(uniques)
+        # print("".join(sorted(uniques)))
+    print(f"Found {count} questions that had 'yes' responses")
 
 
 if __name__ == "__main__":
