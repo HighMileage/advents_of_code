@@ -9,24 +9,38 @@ def inputs(file_path):
 
 
 def main(file_path):
-    data = list(inputs(file_path))
-    batch = ""
-    responses = []
+    data = inputs(file_path)
+    group = []
+    families = []
+
     for i, line in enumerate(data):
-        batch = batch + line
+        if line == "":
+            continue
+
+        group.append(line)
+
         if i + 1 < len(data) and data[i + 1] == "":
-            responses.append(batch)
-            batch = ""
+            families.append(group)
+            group = []
+
         if i + 1 == len(data):
-            responses.append(batch)
+            families.append(group)
 
     count = 0
-    for response in responses:
-        uniques = set()
-        uniques.update(response)
-        count += len(uniques)
-        # print("".join(sorted(uniques)))
-    print(f"Found {count} questions that had 'yes' responses")
+
+    for family in families:
+        commonalities = set()
+        for i, member in enumerate(family):
+            member_responses = set(member)
+
+            if i == 0:
+                commonalities = member_responses
+
+            commonalities = commonalities & member_responses
+
+        count += len(commonalities)
+
+    print(f"Found {count} questions that had 'yes' reponses")
 
 
 if __name__ == "__main__":
