@@ -8,6 +8,7 @@ black = "*"
 pylint = "*"
 
 [packages]
+advent-of-code-data = "*"
 
 [requires]
 python_version = "3.9"
