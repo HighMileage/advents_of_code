@@ -8,6 +8,7 @@ import sys
 from collections import namedtuple
 
 DAY = int(os.path.splitext(os.path.basename(__file__))[0].split("_")[1])
+Vector = namedtuple("Vector", "x y")
 
 
 def process_data(input_data):
@@ -35,6 +36,17 @@ def get_data(filepath=None):
             yield line.strip()
 
 
+def vector_translation(degrees, v):
+    if degrees in (-90, 270):
+        return Vector(-v.y, v.x)
+
+    if degrees in (180, -180):
+        return Vector(-v.x, -v.y)
+
+    if degrees in (90, -270):
+        return Vector(v.y, -v.x)
+
+
 def main(data):
     d = process_data(data)
 
@@ -45,34 +57,39 @@ def main(data):
     right_degree_conv = {90: 1, 180: 2, 270: 3}
     left_degree_conv = {90: 3, 180: 2, 270: 1}
     heading = 1
+    waypoint = Vector(10, 1)
 
     for instruction in d:
+        print(waypoint)
         action, units = instruction
 
         if action == "F":
-            vectors.append((heading, units))
+            new_x = (units) * waypoint.x
+            new_y = (units) * waypoint.y
+            waypoints = Vector(new_x + waypoint.x, new_y + waypoint.y)
+            vectors.append((new_x, new_y))
 
-        if action == "R":
-            heading = (heading + right_degree_conv[units]) % 4
+        if action in ("L", "R"):
+            degrees = units * (-1 if action == "L" else 1)
+            waypoint = vector_translation(degrees, waypoint)
 
-        if action == "L":
-            heading = (heading + left_degree_conv[units]) % 4
+        if action in ("N", "S"):
+            sign = -1 if action == "S" else 1
+            waypoint = Vector(waypoint.x, waypoint.y + units * sign)
 
-        if action in headings.keys():
-            direction = headings[action]
-            vectors.append((direction, units))
+        if action in ("E", "W"):
+            sign = -1 if action == "W" else 1
+            waypoint = Vector(waypoint.x + units * sign, waypoint.y)
 
-    NS = 0
-    EW = 0
-    for d, u in [(cardinal[k], unit) for k, unit in vectors]:
-        print(d, u)
-        if d in ("S", "N"):
-            NS += u * (-1 if d == "S" else 1)
+    ns = 0
+    ew = 0
 
-        if d in ("E", "W"):
-            EW += u * (-1 if d == "W" else 1)
+    for vector in vectors:
+        east_west, north_south = vector
+        ns += north_south
+        ew += east_west
 
-    print(NS, EW)
+    print(f"Total distance is {abs(ew) + abs(ns)}")
 
 
 if __name__ == "__main__":
