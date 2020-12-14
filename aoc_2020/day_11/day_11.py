@@ -9,6 +9,23 @@ from collections import namedtuple
 
 DAY = int(os.path.splitext(os.path.basename(__file__))[0].split("_")[1])
 Seat = namedtuple("Seat", "x y")
+EIGHT_OCCUPIED = """
+.......#.
+...#.....
+.#.......
+.........
+..#L....#
+....#....
+.........
+#........
+...#.....
+"""
+
+MULTI = """
+.............
+.L.L.#.#.#.#.
+.............
+"""
 
 
 def process_data(input_data):
@@ -32,14 +49,16 @@ def get_data(filepath=None):
 
 def main(data):
     d = process_data(data)
+    # d = process_data(line for line in MULTI.strip().split("\n"))
     s = SeatingLayout(d)
     layout = ""
     while True:
         s.tick()
+        # print(s.seating_layout(), "\n")
         if s.seating_layout() == layout:
             occupied_seats = sum(1 for seat in s.seating_layout() if seat == "#")
             print(f"We've stabilized with {occupied_seats} occupied seats!\n")
-            print(s.seating_layout())
+            # print(s.seating_layout())
             break
         layout = s.seating_layout()
 
@@ -66,18 +85,52 @@ class SeatingLayout:
                 if neighbor_x in self.possible_xs and neighbor_y in self.possible_ys:
                     yield (neighbor_x, neighbor_y)
 
+    def line_of_sight_seats(self, seat):
+        slopes = [
+            slope
+            for slope in [(i, j) for i in range(-1, 2) for j in range(-1, 2)]
+            if slope != (0, 0)
+        ]
+
+        seats = []
+        x, y = seat
+
+        for slope in slopes:
+            run, rise = slope
+            i = 1
+            while True:
+                try:
+                    target_x = x + run * i
+                    target_y = y + rise * i
+                    # print(f"Processing ({target_x}, {target_y})")
+                    i += 1
+                    if (
+                        (target := self.seating_data[target_y][target_x] in ("#", "L"))
+                        and target_x >= 0
+                        and target_y >= 0
+                    ):
+                        seats.append((target_x, target_y))
+                        break
+
+                except IndexError as e:
+                    break
+
+        return seats
+
     def empty_no_neighbors(self, seat):
         x, y = seat
         if self.seating_data[y][x] == "L":
-            return all(not self.occupied(seat) for seat in self.surrounding_seats(seat))
+            return all(
+                not self.occupied(seat) for seat in self.line_of_sight_seats(seat)
+            )
         return False
 
     def occupied_with_neighbors(self, seat):
         x, y = seat
         if self.seating_data[y][x] == "#":
             return (
-                sum(1 for seat in self.surrounding_seats(seat) if self.occupied(seat))
-                >= 4
+                sum(1 for seat in self.line_of_sight_seats(seat) if self.occupied(seat))
+                >= 5
             )
         return False
 
