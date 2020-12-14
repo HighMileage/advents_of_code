@@ -5,6 +5,7 @@ import itertools
 import io
 import os
 import sys
+import math
 from collections import namedtuple
 
 DAY = int(os.path.splitext(os.path.basename(__file__))[0].split("_")[1])
@@ -12,13 +13,7 @@ Vector = namedtuple("Vector", "x y")
 
 
 def process_data(input_data):
-    data = []
-    for instruct in input_data:
-        action = instruct[0]
-        units = int(instruct[1:])
-        data.append((action, units))
-
-    return data
+    return list(input_data)
 
 
 def get_data(filepath=None):
@@ -38,8 +33,24 @@ def get_data(filepath=None):
 
 def main(data):
     d = process_data(data)
-    for i in d:
-        print(i)
+    ready_at = int(d[0])
+    cadences = [
+        int(interval) for interval in sorted(d[1].split(",")) if interval != "x"
+    ]
+
+    wait_times = []
+    print(ready_at)
+    print(cadences)
+    for cadence in cadences:
+        meow = math.floor(ready_at / cadence)
+        print(meow)
+        time_to_wait = ((meow + 1) * cadence) - ready_at
+        print("FOUND", time_to_wait)
+        wait_times.append((cadence, time_to_wait))
+
+    wait_times = sorted(wait_times, key=lambda x: x[1])
+    print(f"Shortest wait time is: {wait_times[0][1]}")
+    print(f"Solution is {wait_times[0][0]*wait_times[0][1]}")
 
 
 if __name__ == "__main__":
