@@ -1,0 +1,15 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+      - staging
+      - trying
+  pull_request:
+jobs:
+  ci-success:
+    name: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: CI succeeded
+        run: exit 0
